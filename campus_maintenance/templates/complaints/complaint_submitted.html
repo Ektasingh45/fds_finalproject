@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Complaint submitted{% endblock %}
+{% block content %}
+<div class="form-page card center">
+    <h1>Complaint submitted</h1>
+    <p>Your reference ID is</p>
+    <p class="big-ref">{{ complaint.reference_id }}</p>
+    <p class="muted">Keep this ID to follow up on your complaint.</p>
+
+    <dl class="details details-center">
+        <dt>Priority</dt><dd><span class="badge priority-{{ complaint.priority }}">{{ complaint.get_priority_display }}</span></dd>
+        <dt>Status</dt><dd><span class="badge status-{{ complaint.status }}">{{ complaint.get_status_display }}</span></dd>
+        <dt>Assigned to</dt>
+        <dd>{% if complaint.assigned_to %}{{ complaint.assigned_to.get_full_name|default:complaint.assigned_to.username }}{% else %}Waiting for the administrator to assign{% endif %}</dd>
+        <dt>Target date</dt><dd>{{ complaint.deadline|date:"d M Y, H:i" }}</dd>
+    </dl>
+
+    {% if complaint.safety_review_needed %}
+    <div class="alert alert-warning">This complaint may involve a safety risk, so it has been marked Urgent. If there is immediate danger, also inform campus security.</div>
+    {% endif %}
+
+    <div class="button-row button-row-center">
+        <a href="{% url 'complaint_detail' complaint.pk %}" class="btn">View details</a>
+        <a href="{% url 'reporter_dashboard' %}" class="btn btn-outline">Back to my complaints</a>
+    </div>
+</div>
+{% endblock %}

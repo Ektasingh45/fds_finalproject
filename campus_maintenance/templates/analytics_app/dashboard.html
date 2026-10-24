@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>Complaint analytics</h1>
+        <p class="muted">Charts drawn on the server with Matplotlib from the live database (data prepared with Pandas and NumPy).</p>
+    </div>
+    <div class="button-row">
+        <a href="{% url 'export_csv' %}" class="btn btn-outline">Export CSV</a>
+        <a href="{% url 'historical_upload' %}" class="btn">Analyse historical CSV</a>
+    </div>
+</div>
+
+{% include "analytics_app/_report.html" %}
+{% endblock %}

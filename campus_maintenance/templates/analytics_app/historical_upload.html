@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Historical CSV analysis{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>Historical CSV analysis</h1>
+        <p class="muted">
+            Upload old complaint records (for example from a register or spreadsheet) to get an independent
+            report. <strong>The uploaded data is not saved</strong> and is never added to the live complaints.
+        </p>
+    </div>
+</div>
+
+<div class="detail-layout">
+    <div class="detail-main">
+        <section class="card">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {% include "includes/form_fields.html" with form=form %}
+                <button type="submit" class="btn">Upload and analyse</button>
+            </form>
+        </section>
+    </div>
+    <aside class="detail-side">
+        <section class="card">
+            <h3>Expected columns</h3>
+            <p><strong>Required:</strong></p>
+            <ul class="column-list">{% for column in required_columns %}<li><code>{{ column }}</code></li>{% endfor %}</ul>
+            <p><strong>Optional:</strong></p>
+            <ul class="column-list">{% for column in optional_columns %}<li><code>{{ column }}</code></li>{% endfor %}</ul>
+            <p class="muted">Dates like <code>2026-03-14 10:30</code>. Priority: low, medium, high, urgent.
+            Status: submitted, assigned, in_progress, resolved, reopened, closed.</p>
+            <a href="{% static 'samples/historical_complaints_sample.csv' %}" class="btn btn-small btn-outline" download>Download sample CSV</a>
+        </section>
+    </aside>
+</div>
+
+{% if error_message %}
+<div class="alert alert-error">{{ error_message }}</div>
+{% endif %}
+
+{% if warnings %}
+<div class="alert alert-warning">
+    <strong>Data cleaning notes:</strong>
+    <ul>{% for warning in warnings %}<li>{{ warning }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+{% if report %}
+<h2 class="section-title">Report for uploaded file</h2>
+{% include "analytics_app/_report.html" %}
+{% endif %}
+{% endblock %}

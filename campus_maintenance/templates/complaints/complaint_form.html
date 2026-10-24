@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}New complaint{% endblock %}
+{% block content %}
+<div class="form-page card">
+    <h1>Submit a maintenance complaint</h1>
+    <p class="muted">
+        Fields marked * are required. If there is immediate danger (fire, sparks, flooding),
+        also inform campus security by phone.
+    </p>
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% include "includes/form_fields.html" with form=form %}
+        <div class="button-row">
+            <button type="submit" class="btn">Submit complaint</button>
+            <a href="{% url 'reporter_dashboard' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Admin dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>Administrator dashboard</h1>
+        <p class="muted">Every complaint starts Open. Assign a worker to move it to In Progress, and close it when it is done. Lists are arranged by date, newest first.</p>
+    </div>
+</div>
+
+{% url 'admin_complaint_list' as list_url %}
+<section class="stats stats-3">
+    <a href="{{ list_url }}?view=open" class="stat stat-link track-box-open"><span class="stat-value">{{ open_count }}</span><span class="stat-label">Open &rarr;</span></a>
+    <a href="{{ list_url }}?view=in_progress" class="stat stat-link track-box-in_progress"><span class="stat-value">{{ in_progress_count }}</span><span class="stat-label">In Progress &rarr;</span></a>
+    <a href="{{ list_url }}?view=closed" class="stat stat-link track-box-closed"><span class="stat-value">{{ closed_count }}</span><span class="stat-label">Closed &rarr;</span></a>
+</section>
+
+<section class="card">
+    <h2>Open <span class="count">{{ open_count }}</span></h2>
+    <p class="muted">New complaints, newest first. Choose a worker to move a complaint to In Progress, or close it (for example a duplicate).</p>
+    {% if open_complaints %}
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Location</th><th>Priority</th><th>Date</th><th>Assign to</th><th></th></tr></thead>
+            <tbody>
+            {% for c in open_complaints %}
+                <tr>
+                    <td><a href="{% url 'complaint_detail' c.pk %}" class="ref">{{ c.reference_id }}</a></td>
+                    <td>{{ c.title }}</td>
+                    <td>{{ c.get_category_display }}</td>
+                    <td>{{ c.location }}</td>
+                    <td><span class="badge priority-{{ c.admin_priority }}">{{ c.admin_priority_label }}</span></td>
+                    <td>{{ c.submitted_at|date:"d M, H:i" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'admin_assign' c.pk %}" class="quick-assign">
+                            {% csrf_token %}
+                            <input type="hidden" name="return_to" value="dashboard">
+                            <label for="assign-{{ c.pk }}" class="visually-hidden">Assign {{ c.reference_id }} to</label>
+                            <select name="staff" id="assign-{{ c.pk }}" required>
+                                <option value="">Select a worker</option>
+                                {% for worker in assignable_staff %}
+                                <option value="{{ worker.pk }}">{{ worker.get_full_name|default:worker.username }}{% if worker.profile.department %} ({{ worker.profile.department }}){% endif %}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-small">Assign</button>
+                        </form>
+                    </td>
+                    <td><a href="{% url 'complaint_detail' c.pk %}#close" class="btn btn-small btn-outline">Close</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}<p class="muted">No open complaints.</p>{% endif %}
+</section>
+
+<section class="card">
+    <h2>In Progress <span class="count">{{ in_progress_count }}</span></h2>
+    <p class="muted">Newest first. Click Close when the work is done.</p>
+    {% include "complaints/_admin_table.html" with items=in_progress empty_text="No complaints in progress." %}
+</section>
+
+<section class="card">
+    <h2>Closed <span class="count">{{ closed_count }}</span></h2>
+    <p class="muted">Newest first.</p>
+    {% include "complaints/_admin_table.html" with items=closed empty_text="No closed complaints yet." %}
+</section>
+{% endblock %}

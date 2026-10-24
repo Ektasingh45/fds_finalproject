@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="auth-box card">
+    <h1>Log in</h1>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="alert alert-error">
+            {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+        </div>
+        {% endif %}
+        <div class="form-row{% if form.login_as.errors %} has-error{% endif %}">
+            <label for="{{ form.login_as.id_for_label }}">Login as</label>
+            {{ form.login_as }}
+            {% for error in form.login_as.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="form-row{% if form.username.errors %} has-error{% endif %}">
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+            {% for error in form.username.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="form-row{% if form.password.errors %} has-error{% endif %}">
+            <label for="{{ form.password.id_for_label }}">Password</label>
+            {{ form.password }}
+            {% for error in form.password.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn btn-block">Log in</button>
+    </form>
+    <p class="muted center">New student or faculty member? <a href="{% url 'register' %}">Create an account</a></p>
+</div>
+{% endblock %}

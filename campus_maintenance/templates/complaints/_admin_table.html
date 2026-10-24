@@ -1,0 +1,32 @@
+{% comment %}
+Complaint table for the administrator. Shows only the three tracking words.
+Usage: {% include "complaints/_admin_table.html" with items=complaints empty_text="..." %}
+Rows that are not Closed get a "Close" button.
+{% endcomment %}
+{% if items %}
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Location</th><th>Priority</th><th>Worker</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for c in items %}
+            <tr>
+                <td><a href="{% url 'complaint_detail' c.pk %}" class="ref">{{ c.reference_id }}</a></td>
+                <td>{{ c.title }}</td>
+                <td>{{ c.get_category_display }}</td>
+                <td>{{ c.location }}</td>
+                <td><span class="badge priority-{{ c.admin_priority }}">{{ c.admin_priority_label }}</span></td>
+                <td>{% if c.assigned_to %}{{ c.assigned_to.get_full_name|default:c.assigned_to.username }}{% else %}-{% endif %}</td>
+                <td>{{ c.submitted_at|date:"d M Y" }}</td>
+                <td>
+                    <span class="badge track-{{ c.tracking }}">{{ c.tracking_label }}</span>
+                    {% if c.pk in pending_request_ids %}<a href="{% url 'complaint_detail' c.pk %}" class="badge badge-request">Reopen requested</a>{% endif %}
+                </td>
+                <td>{% if c.tracking != "closed" %}<a href="{% url 'complaint_detail' c.pk %}#close" class="btn btn-small btn-outline">Close</a>{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="muted">{{ empty_text }}</p>
+{% endif %}

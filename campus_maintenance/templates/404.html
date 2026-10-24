@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block content %}
+<div class="card empty-state">
+    <h1>404 &ndash; Page not found</h1>
+    <p>The page or complaint does not exist, or you are not allowed to see it.</p>
+    <a href="{% url 'home' %}" class="btn">Go to my dashboard</a>
+</div>
+{% endblock %}

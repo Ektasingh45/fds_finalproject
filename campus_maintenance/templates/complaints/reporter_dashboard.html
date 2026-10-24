@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}My complaints{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>My complaints</h1>
+        <p class="muted">Track the complaints you have submitted.</p>
+    </div>
+    <a href="{% url 'complaint_create' %}" class="btn">+ New complaint</a>
+</div>
+
+<section class="stats">
+    <div class="stat"><span class="stat-value">{{ total_count }}</span><span class="stat-label">Total submitted</span></div>
+    <div class="stat"><span class="stat-value">{{ open_count }}</span><span class="stat-label">Open</span></div>
+    <div class="stat"><span class="stat-value">{{ resolved_count }}</span><span class="stat-label">Resolved / closed</span></div>
+</section>
+
+{% if complaints %}
+<div class="table-wrap card">
+    <table>
+        <thead>
+            <tr><th>ID</th><th>Title</th><th>Category</th><th>Location</th><th>Priority</th><th>Submitted</th><th>Last update</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+        {% for c in complaints %}
+            <tr>
+                <td><a href="{% url 'complaint_detail' c.pk %}" class="ref">{{ c.reference_id }}</a></td>
+                <td>{{ c.title }}</td>
+                <td>{{ c.get_category_display }}</td>
+                <td>{{ c.location }}</td>
+                <td><span class="badge priority-{{ c.priority }}">{{ c.get_priority_display }}</span></td>
+                <td>{{ c.submitted_at|date:"d M Y" }}</td>
+                <td>{{ c.updated_at|date:"d M Y, H:i" }}</td>
+                <td>{% include "includes/badges.html" %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card empty-state">
+    <h3>No complaints yet</h3>
+    <p>When you report a problem, it will appear here with its current status.</p>
+    <a href="{% url 'complaint_create' %}" class="btn">Submit your first complaint</a>
+</div>
+{% endif %}
+{% endblock %}

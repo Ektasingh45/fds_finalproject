@@ -1,0 +1,18 @@
+{% comment %}
+Renders every field of a form with its label, help text and errors.
+Usage: {% include "includes/form_fields.html" with form=my_form %}
+{% endcomment %}
+{% if form.non_field_errors %}
+<div class="alert alert-error">
+    {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+</div>
+{% endif %}
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+{% for field in form.visible_fields %}
+<div class="form-row{% if field.errors %} has-error{% endif %}{% if field.widget_type == 'checkbox' %} form-row-check{% endif %}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="required">*</span>{% endif %}</label>
+    {{ field }}
+    {% if field.help_text %}<small class="help">{{ field.help_text|safe }}</small>{% endif %}
+    {% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+</div>
+{% endfor %}

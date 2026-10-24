@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>Report campus maintenance problems in one place</h1>
+    <p class="lead">
+        Broken fan, leaking tap, no Wi-Fi in the lab? Submit a complaint, get a reference ID,
+        and follow its progress until it is fixed. Complaints are sent to the right maintenance
+        team automatically.
+    </p>
+    {% if not user.is_authenticated %}
+    <div class="button-row">
+        <a href="{% url 'register' %}" class="btn">Create an account</a>
+        <a href="{% url 'login' %}" class="btn btn-outline">Log in</a>
+    </div>
+    {% endif %}
+</section>
+
+<section class="grid grid-3">
+    <div class="card">
+        <h3>1. Submit</h3>
+        <p>Choose a category, enter the building and room, select urgency and optionally add a photo.</p>
+    </div>
+    <div class="card">
+        <h3>2. Automatic routing</h3>
+        <p>Simple rules set the priority and deadline and assign the complaint to the mapped staff member.</p>
+    </div>
+    <div class="card">
+        <h3>3. Track</h3>
+        <p>See every status change and work note. If it is not really fixed, request reopening.</p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,3 @@
+{% comment %}Status, priority and overdue labels for one complaint "c".{% endcomment %}
+<span class="badge status-{{ c.status }}">{{ c.get_status_display }}</span>
+{% if c.is_overdue %}<span class="badge badge-overdue">Overdue</span>{% endif %}

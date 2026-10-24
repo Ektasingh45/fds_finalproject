@@ -1,0 +1,17 @@
+{% comment %}
+Shared chart layout, used for live data and for uploaded historical CSVs.
+Expects "report" from analysis.build_report(). Only the charts are shown.
+{% endcomment %}
+{% if report.total == 0 %}
+<div class="card empty-state">
+    <h3>No data to analyse yet</h3>
+    <p>Charts will appear once complaints exist.</p>
+</div>
+{% else %}
+<div class="grid grid-2 charts">
+    {% if report.charts.category %}<figure class="card chart"><img src="{{ report.charts.category }}" alt="Bar chart of complaints by category"></figure>{% endif %}
+    {% if report.charts.building %}<figure class="card chart"><img src="{{ report.charts.building }}" alt="Bar chart of complaints by building"></figure>{% endif %}
+    {% if report.charts.monthly %}<figure class="card chart"><img src="{{ report.charts.monthly }}" alt="Line chart of complaints submitted and resolved per month"></figure>{% endif %}
+    {% if report.charts.priority %}<figure class="card chart"><img src="{{ report.charts.priority }}" alt="Stacked bar chart of open complaints by priority, within deadline and overdue"></figure>{% endif %}
+</div>
+{% endif %}

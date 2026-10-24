@@ -1,0 +1,33 @@
+complaint_id,category,building,floor,room,priority,status,submitted_at,resolved_at
+H-001,electrical,Main Block,2,204,medium,closed,2025-07-03 09:15,2025-07-04 16:00
+H-002,plumbing,Hostel A,1,Washroom 1,high,closed,2025-07-05 08:40,2025-07-05 19:30
+H-003,electrical,Main Block,2,204,high,closed,2025-07-18 11:00,2025-07-19 10:00
+H-004,furniture,Library,G,Reading Hall,low,closed,2025-07-22 14:20,2025-07-30 12:00
+H-005,network,CSE Block,3,Lab 3,medium,closed,2025-08-01 10:05,2025-08-02 15:45
+H-006,electrical,Main-Block,2,204,urgent,closed,2025-08-09 12:30,2025-08-09 15:10
+H-007,cleaning,Hostel A,1,Washroom 1,low,closed,2025-08-11 07:50,2025-08-12 09:00
+H-008,plumbing,Hostel A,1,Washroom 1,medium,closed,2025-08-20 18:10,2025-08-22 11:00
+H-009,water_supply,Hostel B,G,Water Cooler,high,closed,2025-09-02 09:00,2025-09-03 13:00
+H-010,equipment,CSE Block,3,Lab 3,medium,resolved,2025-09-10 10:30,2025-09-15 17:00
+H-011,network,CSE Block,3,Lab 3,medium,closed,2025-09-14 11:45,2025-09-15 10:30
+H-012,civil,Admin Block,1,Corridor,low,closed,2025-09-25 15:00,2025-10-10 12:00
+H-013,electrical,Mechanical Block,1,Workshop,urgent,closed,2025-10-04 13:10,2025-10-04 16:00
+H-014,furniture,Main Block,1,104,low,closed,2025-10-12 09:30,2025-10-20 11:00
+H-015,plumbing,Hostel A,2,Washroom 2,medium,closed,2025-10-28 07:20,2025-10-29 18:00
+H-016,network,Library,1,Digital Lab,high,closed,2025-11-05 10:00,2025-11-06 09:00
+H-017,cleaning,Main Block,G,Canteen,medium,closed,2025-11-11 13:40,2025-11-11 17:30
+H-018,electrical,Main Block,2,204,medium,in_progress,2025-11-20 09:10,
+H-019,water_supply,Hostel B,G,Water Cooler,high,closed,2025-12-01 08:00,2025-12-01 20:00
+H-020,equipment,ECE Block,2,Lab 2,medium,assigned,2025-12-08 11:20,
+H-021,plumbing,Hostel A,1,Washroom 1,high,closed,2025-12-15 06:50,2025-12-16 10:00
+H-022,furniture,CSE Block,2,Classroom 201,low,submitted,2026-01-06 10:10,
+H-023,electrical,Hostel B,3,Room 312,medium,closed,2026-01-14 21:00,2026-01-16 12:00
+H-024,network,CSE Block,3,Lab 3,urgent,closed,2026-01-20 09:00,2026-01-20 12:30
+H-025,cleaning,Hostel A,1,Washroom 1,low,closed,2026-02-02 08:15,2026-02-03 09:00
+H-026,civil,Library,G,Entrance,medium,resolved,2026-02-10 12:00,2026-02-18 15:00
+H-027,electrical,Main Block,2,204,high,closed,2026-02-21 10:40,2026-02-22 09:30
+H-028,plumbing,Hostel A,1,Washroom 1,medium,reopened,2026-03-03 07:30,
+H-029,water_supply,Hostel B,G,Water Cooler,critical,closed,2026-03-09 09:20,2026-03-09 18:00
+H-030,,Main Block,1,101,low,closed,2026-03-12 10:00,2026-03-13 10:00
+H-031,furniture,Main Block,1,104,low,closed,not a date,2026-03-20 10:00
+H-032,network,CSE Block,3,Lab 3,medium,closed,2026-03-25 14:00,2026-03-24 09:00

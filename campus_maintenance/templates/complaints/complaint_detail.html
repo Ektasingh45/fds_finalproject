@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load tracking %}
+{% block title %}{{ complaint.reference_id }}{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <p class="ref">{{ complaint.reference_id }}</p>
+        <h1>{{ complaint.title }}</h1>
+        <p>
+            {% if is_admin_user %}
+                {# The administrator only sees Open / In Progress / Closed. #}
+                <span class="badge track-{{ complaint.tracking }}">{{ complaint.tracking_label }}</span>
+                <span class="badge priority-{{ complaint.admin_priority }}">{{ complaint.admin_priority_label }} priority</span>
+                {% if pending_request %}<span class="badge badge-request">Reopen requested</span>{% endif %}
+            {% else %}
+                {% include "includes/badges.html" with c=complaint %}
+                <span class="badge priority-{{ complaint.priority }}">{{ complaint.get_priority_display }} priority</span>
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="detail-layout">
+    <div class="detail-main">
+        <section class="card">
+            <h2>Details</h2>
+            <dl class="details">
+                <dt>Category</dt><dd>{{ complaint.get_category_display }}</dd>
+                <dt>Location</dt><dd>{{ complaint.location }}</dd>
+                <dt>Reported by</dt><dd>{{ complaint.reporter.get_full_name|default:complaint.reporter.username }}</dd>
+                <dt>Worker</dt><dd>{% if complaint.assigned_to %}{{ complaint.assigned_to.get_full_name|default:complaint.assigned_to.username }}{% else %}Not assigned yet{% endif %}</dd>
+                <dt>Submitted</dt><dd>{{ complaint.submitted_at|date:"d M Y, H:i" }}</dd>
+                {% if not is_admin_user %}
+                <dt>Reported urgency</dt><dd>{{ complaint.get_reported_urgency_display }}</dd>
+                <dt>Target deadline</dt><dd>{{ complaint.deadline|date:"d M Y, H:i" }}</dd>
+                {% endif %}
+                {% if complaint.resolved_at %}<dt>{% if is_admin_user %}Closed{% else %}Resolved{% endif %}</dt><dd>{{ complaint.resolved_at|date:"d M Y, H:i" }}</dd>{% endif %}
+            </dl>
+            <h3>Description</h3>
+            <p class="description">{{ complaint.description|linebreaksbr }}</p>
+            {% if complaint.resolution_notes %}
+            <h3>Resolution notes</h3>
+            <p class="description">{{ complaint.resolution_notes|linebreaksbr }}</p>
+            {% endif %}
+            <div class="photos">
+                {% if complaint.photo %}
+                <figure>
+                    <img src="{% url 'complaint_photo' complaint.pk 'issue' %}" alt="Photo of the reported issue">
+                    <figcaption>Reported issue</figcaption>
+                </figure>
+                {% endif %}
+                {% if complaint.resolution_photo %}
+                <figure>
+                    <img src="{% url 'complaint_photo' complaint.pk 'resolution' %}" alt="Photo after the work was completed">
+                    <figcaption>After completion</figcaption>
+                </figure>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Status history</h2>
+            <ol class="timeline">
+            {% for entry in history %}
+                <li>
+                    <div class="timeline-head">
+                        {% if is_admin_user %}
+                            {% if entry.old_status and entry.old_status|tracking != entry.new_status|tracking %}
+                                <span class="badge track-{{ entry.old_status|tracking }}">{{ entry.old_status|tracking_label }}</span> &rarr;
+                            {% endif %}
+                            <span class="badge track-{{ entry.new_status|tracking }}">{{ entry.new_status|tracking_label }}</span>
+                        {% else %}
+                            {% if entry.old_status and entry.old_status != entry.new_status %}
+                                <span class="badge status-{{ entry.old_status }}">{{ entry.get_old_status_display }}</span> &rarr;
+                            {% endif %}
+                            <span class="badge status-{{ entry.new_status }}">{{ entry.get_new_status_display }}</span>
+                        {% endif %}
+                        <span class="muted">{{ entry.created_at|date:"d M Y, H:i" }} &middot; {{ entry.changed_by_name }}</span>
+                    </div>
+                    {% if entry.note %}<p>{{ entry.note|linebreaksbr }}</p>{% endif %}
+                </li>
+            {% empty %}
+                <li>No history yet.</li>
+            {% endfor %}
+            </ol>
+        </section>
+
+        {% if reopen_requests %}
+        <section class="card">
+            <h2>Reopening requests</h2>
+            {% for item in reopen_requests %}
+            <div class="reopen-item">
+                <p><strong>{{ item.get_status_display }}</strong> &middot; {{ item.created_at|date:"d M Y, H:i" }} by {{ item.requested_by.username }}</p>
+                <p>{{ item.reason }}</p>
+                {% if item.admin_note %}<p class="muted">Admin note: {{ item.admin_note }}</p>{% endif %}
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+    </div>
+
+    <aside class="detail-side">
+        {# ---------- Reporter actions ---------- #}
+        {% if can_confirm %}
+        <section class="card">
+            <h2>Is it fixed?</h2>
+            <form method="post" action="{% url 'confirm_resolution' complaint.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-block">Yes, close the complaint</button>
+            </form>
+            <hr>
+            <form method="post" action="{% url 'request_reopen' complaint.pk %}" novalidate>
+                {% csrf_token %}
+                {% include "includes/form_fields.html" with form=reopen_form %}
+                <button type="submit" class="btn btn-outline btn-block">No, request reopening</button>
+            </form>
+        </section>
+        {% endif %}
+        {% if pending_request and not is_admin_user %}
+        <section class="card"><p>A reopening request is waiting for administrator review.</p></section>
+        {% endif %}
+
+        {# ---------- Administrator actions: Assign (Open -> In Progress), Close ---------- #}
+        {% if assign_form %}
+        <section class="card{% if not complaint.assigned_to %} card-highlight{% endif %}">
+            <h2>{% if complaint.assigned_to %}Change worker{% else %}Assign a worker{% endif %}</h2>
+            {% if not complaint.assigned_to %}<p class="muted">Assigning moves the complaint to In Progress.</p>{% endif %}
+            <form method="post" action="{% url 'admin_assign' complaint.pk %}" novalidate>
+                {% csrf_token %}
+                {% include "includes/form_fields.html" with form=assign_form %}
+                <button type="submit" class="btn btn-block">Assign</button>
+            </form>
+        </section>
+        {% endif %}
+        {% if progress_form %}
+        <section class="card" id="close">
+            <h2>Close or add a note</h2>
+            <p class="muted">Choose <strong>Close complaint</strong> and write a short note to close it.</p>
+            <form method="post" action="{% url 'admin_update_progress' complaint.pk %}" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {% include "includes/form_fields.html" with form=progress_form %}
+                <button type="submit" class="btn btn-block">Save</button>
+            </form>
+        </section>
+        {% endif %}
+        {% if review_form %}
+        <section class="card card-highlight">
+            <h2>Reopen requested</h2>
+            <p>{{ pending_request.reason }}</p>
+            <form method="post" action="{% url 'admin_review_reopen' pending_request.pk %}" novalidate>
+                {% csrf_token %}
+                {% include "includes/form_fields.html" with form=review_form %}
+                <button type="submit" class="btn btn-block">Submit decision</button>
+            </form>
+        </section>
+        {% endif %}
+    </aside>
+</div>
+{% endblock %}
